@@ -8,6 +8,7 @@ from skimage.io import imread
 import cv2
 from glob import glob
 import imageio
+from pathlib import Path
 
 
 
@@ -274,7 +275,7 @@ class IsbiCellDataset(data.Dataset):
     def __init__(self, state, transform=None, target_transform=None):
         self.state = state
         self.aug = True
-        self.root = r'E:\datasets\isbi'
+        self.root = str(Path(os.getcwd()).joinpath('dataset/isbi').absolute())
         self.img_paths = None
         self.mask_paths = None
         self.train_img_paths, self.val_img_paths,self.test_img_paths = None,None,None
@@ -284,12 +285,12 @@ class IsbiCellDataset(data.Dataset):
         self.target_transform = target_transform
 
     def getDataPath(self):
-        self.img_paths = glob(self.root + r'\train\images\*')
-        self.mask_paths = glob(self.root + r'\train\label\*')
-        # self.val_img_paths = glob(self.root + r'\val\val_images\*')
-        # self.val_mask_paths = glob(self.root + r'\val\val_mask\*')
-        # self.test_img_paths = glob(self.root + r'\test\test_images\*')
-        # self.test_mask_paths = glob(self.root + r'\test\test_mask\*')
+        self.img_paths = glob(str(Path(self.root).joinpath(r'train/images/*').absolute()))
+        self.mask_paths = glob(str(Path(self.root).joinpath(r'train/label/*').absolute()))
+        # self.val_img_paths = glob(str(Path(self.root).joinpath(r'val/val_images/*').absolute()))
+        # self.val_mask_paths = glob(str(Path(self.root).joinpath(r'val/val_mask/*').absolute()))
+        # self.test_img_paths = glob(str(Path(self.root).joinpath(r'test/test_images/*').absolute()))
+        # self.test_mask_paths = glob(str(Path(self.root).joinpath(r'test/test_mask/*').absolute()))
         self.train_img_paths, self.val_img_paths, self.train_mask_paths, self.val_mask_paths = \
             train_test_split(self.img_paths, self.mask_paths, test_size=0.2, random_state=41)
         self.test_img_paths, self.test_mask_paths = self.val_img_paths,self.val_mask_paths
