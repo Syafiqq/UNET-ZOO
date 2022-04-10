@@ -21,6 +21,8 @@ from torchvision.transforms import transforms
 from plot import loss_plot
 from plot import metrics_plot
 from torchvision.models import vgg16
+from pathlib import Path
+
 def getArgs():
     parse = argparse.ArgumentParser()
     parse.add_argument('--deepsupervision', default=0)
@@ -38,8 +40,8 @@ def getArgs():
     return args
 
 def getLog(args):
-    dirname = os.path.join(args.log_dir,args.arch,str(args.batch_size),str(args.dataset),str(args.epoch))
-    filename = dirname +'/log.log'
+    dirname = str(Path(os.getcwd()).joinpath("{}/{}/{}/{}/{}".format(args.log_dir, args.arch, str(args.batch_size), str(args.dataset), str(args.epoch))).absolute())
+    filename = str(Path(dirname).joinpath('log.log').absolute())
     if not os.path.exists(dirname):
         os.makedirs(dirname)
     logging.basicConfig(
@@ -219,12 +221,12 @@ def train(model, criterion, optimizer, train_dataloader,val_dataloader, args):
 def test(val_dataloaders,save_predict=False):
     logging.info('final test........')
     if save_predict ==True:
-        dir = os.path.join(r'./saved_predict',str(args.arch),str(args.batch_size),str(args.epoch),str(args.dataset))
+        dir = str(Path(os.getcwd()).joinpath("saved_predict/{}/{}/{}/{}".format(str(args.arch), str(args.batch_size), str(args.epoch), str(args.dataset))).absolute())
         if not os.path.exists(dir):
             os.makedirs(dir)
         else:
             print('dir already exist!')
-    model.load_state_dict(torch.load(r'./saved_model/'+str(args.arch)+'_'+str(args.batch_size)+'_'+str(args.dataset)+'_'+str(args.epoch)+'.pth', map_location='cpu'))  # 载入训练好的模型
+    model.load_state_dict(torch.load(str(Path(os.getcwd()).joinpath("saved_model/{}_{}_{}_{}.pth".format(str(args.arch), str(args.batch_size), str(args.dataset), str(args.epoch))).absolute()), map_location='cpu'))  # 载入训练好的模型
     model.eval()
 
     #plt.ion() #开启动态模式
@@ -267,7 +269,7 @@ def test(val_dataloaders,save_predict=False):
                     saved_predict = '.'+saved_predict.split('.')[1] + '.tif'
                     plt.savefig(saved_predict)
                 else:
-                    plt.savefig(dir +'/'+ mask_path[0].split('\\')[-1])
+                    plt.savefig(str(Path(dir).joinpath(mask_path[0]).absolute()))
             #plt.pause(0.01)
             print('iou={},dice={}'.format(iou,dice))
             if i < num:i+=1   #处理验证集下一张图
